@@ -5,25 +5,33 @@ var express = require('express');
 
 var app = express();
 
-var inputs = [{value: true},
-		{ value: "on"}];
+var states = [{currentState: false},
+	{targetState: false}];
+
 //this allows us to link index.html
 app.use(express.static(__dirname ));
 
 //Express route for incoming rerquests for a customer name
-app.get('/inputs/status', function( req, res) {
-	res.send(inputs[0])
+app.get('/api/status', function( req, res) {
+	res.send(states[0])
 });
-app.get('/inputs/order',function(req, res) {
-	res.send(inputs[1])
+app.get('/api/order',function(req, res) {
+	states[1].targetState = true;
+	if(!(states[0] === states[1])) {
+		states[0].currentState = true;
+		res.send('The switch was turned on and has a statue of: ' + states[0].currentState);
+	} else {
+		res.send(states[0].currentState);
+		//res.send('The switch was already on');
+	}
 });
 
-app.get('/inputs/:id', function(req, res) {
-	res.send(inputs[req.params.id])
+app.get('/api/:id', function(req, res) {
+	res.send(states[req.params.id])
 });
 
-app.get('/inputs', function(req, res) {
-	res.status(200).send(inputs)
+app.get('/api', function(req, res) {
+	res.status(200).send(states)
 });
 
 //express route for any other unrecognised incoming requests
